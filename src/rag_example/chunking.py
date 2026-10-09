@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Protocol
 
 from .ingestion import Document
 
@@ -14,6 +15,12 @@ class Chunk:
     text: str
     source: str
     index: int
+
+
+class Chunker(Protocol):
+    """Anything with a .chunk(documents) method can be plugged into the pipeline."""
+
+    def chunk(self, documents: list[Document]) -> list[Chunk]: ...
 
 
 class FixedSizeChunker:

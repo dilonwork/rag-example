@@ -59,6 +59,17 @@ python demo.py --ask "What is chunking?"
 python demo.py --interactive
 ```
 
+## Examples
+
+Four runnable scripts under `examples/` (run from the repo root):
+
+| Script | What it shows | LLM needed? |
+|---|---|---|
+| `01_retrieve.py` | Pull content out of RAG: ranked chunks, similarity scores, source metadata | No |
+| `02_answer.py` | Full Q&A with cited sources | Yes |
+| `03_my_docs.py` | Index your own folder: `RAG_DOCS_DIR=~/my-notes python examples/03_my_docs.py --ask "..."` | No |
+| `04_custom_chunker.py` | Plug in your own chunking strategy via `RAGPipeline(settings, chunker=...)` | No |
+
 ## Configuration (environment variables)
 
 | Variable | Default | Purpose |

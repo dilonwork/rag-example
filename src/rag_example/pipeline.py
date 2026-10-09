@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .chunking import Chunk, FixedSizeChunker
+from .chunking import Chunk, Chunker, FixedSizeChunker
 from .config import Settings
 from .embeddings import Embedder, SentenceTransformerEmbedder
 from .ingestion import load_documents
@@ -31,9 +31,14 @@ class Answer:
 
 
 class RAGPipeline:
-    def __init__(self, settings: Settings | None = None) -> None:
+    def __init__(
+        self, settings: Settings | None = None, chunker: Chunker | None = None
+    ) -> None:
         self.settings = settings or Settings()
         self.settings.validate()
+        self.chunker: Chunker = chunker or FixedSizeChunker(
+            self.settings.chunk_size, self.settings.chunk_overlap
+        )
         self.embedder: Embedder = SentenceTransformerEmbedder(self.settings.embedding_model)
         self.store = InMemoryVectorStore()
         self.retriever = Retriever(self.embedder, self.store, top_k=self.settings.top_k)
@@ -49,8 +54,7 @@ class RAGPipeline:
     def ingest(self) -> list[Chunk]:
         """Run stages 1-4: load docs, chunk, embed, store."""
         documents = load_documents(self.settings.docs_dir)
-        chunker = FixedSizeChunker(self.settings.chunk_size, self.settings.chunk_overlap)
-        chunks = chunker.chunk(documents)
+        chunks = self.chunker.chunk(documents)
         vectors = self.embedder.embed([c.text for c in chunks])
         self.store.add(chunks, vectors)
         self._chunks = chunks
