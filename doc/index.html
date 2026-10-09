@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rag-example — Documentation</title>
+<style>
+  :root { --bg:#ffffff; --fg:#1f2937; --muted:#6b7280; --accent:#1d4ed8;
+          --card:#f8fafc; --border:#e5e7eb; --code-bg:#f3f4f6; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+         "Helvetica Neue",Arial,sans-serif; color:var(--fg); background:var(--bg);
+         line-height:1.65; }
+  .wrap { max-width:860px; margin:0 auto; padding:0 24px 80px; }
+  header.hero { padding:64px 0 32px; border-bottom:1px solid var(--border); }
+  header.hero h1 { font-size:2.2rem; margin:0 0 8px; }
+  header.hero p.sub { color:var(--muted); font-size:1.1rem; margin:0 0 20px; }
+  .btn { display:inline-block; padding:10px 20px; border-radius:8px; text-decoration:none;
+         font-weight:600; margin-right:12px; }
+  .btn.primary { background:var(--accent); color:#fff; }
+  .btn.ghost { border:1px solid var(--border); color:var(--fg); }
+  h2 { font-size:1.5rem; margin:48px 0 12px; color:#111827; }
+  h3 { font-size:1.15rem; margin:28px 0 8px; }
+  p, li { color:#374151; }
+  code { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+         background:var(--code-bg); padding:2px 6px; border-radius:4px; font-size:.92em; }
+  pre { background:var(--code-bg); border:1px solid var(--border); border-radius:8px;
+        padding:16px; overflow-x:auto; font-size:.9rem; line-height:1.55; }
+  pre code { background:none; padding:0; }
+  .flow { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
+  .stage { background:var(--card); border:1px solid var(--border); border-radius:8px;
+           padding:10px 14px; font-size:.9rem; }
+  .stage b { display:block; font-size:.78rem; color:var(--accent);
+             text-transform:uppercase; letter-spacing:.04em; }
+  .arrow { align-self:center; color:var(--muted); font-weight:700; }
+  .cards { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  @media (max-width:640px){ .cards{ grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:10px;
+          padding:18px; }
+  .card h3 { margin:0 0 6px; font-size:1.05rem; }
+  .card p { font-size:.92rem; margin:6px 0; }
+  .tag { display:inline-block; font-size:.75rem; font-weight:700; border-radius:999px;
+         padding:2px 10px; margin-bottom:8px; }
+  .tag.no-llm { background:#dcfce7; color:#166534; }
+  .tag.llm { background:#fef3c7; color:#92400e; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.92rem; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); }
+  th { background:var(--card); font-size:.85rem; text-transform:uppercase;
+       letter-spacing:.04em; color:var(--muted); }
+  footer { margin-top:64px; padding-top:24px; border-top:1px solid var(--border);
+           color:var(--muted); font-size:.9rem; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>rag-example</h1>
+    <p class="sub">A minimal, modular Retrieval-Augmented Generation pipeline you can read in one sitting.</p>
+    <a class="btn primary" href="rag-examples-tutorial.pdf">Read the tutorial (PDF, 中文)</a>
+    <a class="btn ghost" href="https://github.com/dilonwork/rag-example">GitHub repo</a>
+  </header>
+
+  <h2>Architecture</h2>
+  <p>Two phases. Index once, query on every question. Each stage is its own module with a tiny interface, so any piece can be swapped without touching the rest.</p>
+  <h3>Index phase (<code>ingest</code>)</h3>
+  <div class="flow">
+    <div class="stage"><b>1 · ingestion</b><code>ingestion.py</code></div><span class="arrow">→</span>
+    <div class="stage"><b>2 · chunking</b><code>chunking.py</code></div><span class="arrow">→</span>
+    <div class="stage"><b>3 · embeddings</b><code>embeddings.py</code></div><span class="arrow">→</span>
+    <div class="stage"><b>4 · vector store</b><code>vector_store.py</code></div>
+  </div>
+  <h3>Query phase (<code>ask</code>)</h3>
+  <div class="flow">
+    <div class="stage"><b>5 · retrieval</b><code>retrieval.py</code></div><span class="arrow">→</span>
+    <div class="stage"><b>6 · prompting</b><code>prompting.py</code></div><span class="arrow">→</span>
+    <div class="stage"><b>7 · llm</b><code>llm.py</code></div>
+  </div>
+  <p><code>pipeline.py</code> wires it all together. Sample documents live in <code>data/docs/</code> (3 files → 6 chunks with the default chunker).</p>
+
+  <h2>Examples</h2>
+  <p>Runnable scripts under <code>examples/</code>. Run them from the repo root after <code>pip install -r requirements.txt</code>.</p>
+  <div class="cards">
+    <div class="card">
+      <span class="tag no-llm">no LLM needed</span>
+      <h3>01 · Retrieve content</h3>
+      <p>Pull content <em>out</em> of RAG: ranked chunks, similarity scores, and source metadata for a question.</p>
+      <pre><code>python examples/01_retrieve.py</code></pre>
+    </div>
+    <div class="card">
+      <span class="tag llm">LLM required</span>
+      <h3>02 · Answer with sources</h3>
+      <p>Full Q&amp;A: retrieve → build prompt → generate, with cited sources. Uses local Ollama by default.</p>
+      <pre><code>python examples/02_answer.py</code></pre>
+    </div>
+    <div class="card">
+      <span class="tag no-llm">no LLM needed</span>
+      <h3>03 · Your own documents</h3>
+      <p>Point the pipeline at any folder of <code>.md</code>/<code>.txt</code> files instead of the samples.</p>
+      <pre><code>RAG_DOCS_DIR=~/my-notes \
+  python examples/03_my_docs.py \
+  --ask "How is caching designed?"</code></pre>
+    </div>
+    <div class="card">
+      <span class="tag no-llm">no LLM needed</span>
+      <h3>04 · Custom chunker</h3>
+      <p>Inject your own chunking strategy via <code>RAGPipeline(settings, chunker=...)</code> — no pipeline changes.</p>
+      <pre><code>python examples/04_custom_chunker.py</code></pre>
+    </div>
+  </div>
+  <p>For a step-by-step walkthrough of each example — implementation, how to run, and expected output — see the <a href="rag-examples-tutorial.pdf">tutorial PDF</a> (Traditional Chinese, 7 pages).</p>
+
+  <h2>Configuration</h2>
+  <table>
+    <tr><th>Variable</th><th>Default</th><th>Purpose</th></tr>
+    <tr><td><code>RAG_DOCS_DIR</code></td><td><code>data/docs</code></td><td>Documents to index</td></tr>
+    <tr><td><code>RAG_CHUNK_SIZE</code></td><td><code>800</code></td><td>Max characters per chunk</td></tr>
+    <tr><td><code>RAG_CHUNK_OVERLAP</code></td><td><code>120</code></td><td>Overlap between chunks</td></tr>
+    <tr><td><code>RAG_EMBEDDING_MODEL</code></td><td><code>all-MiniLM-L6-v2</code></td><td>sentence-transformers model</td></tr>
+    <tr><td><code>RAG_TOP_K</code></td><td><code>4</code></td><td>Chunks retrieved per question</td></tr>
+    <tr><td><code>RAG_LLM_PROVIDER</code></td><td><code>ollama</code></td><td><code>ollama</code> or <code>openai</code></td></tr>
+    <tr><td><code>RAG_LLM_MODEL</code></td><td><code>llama3.1</code></td><td>Chat model name</td></tr>
+    <tr><td><code>OLLAMA_HOST</code></td><td><code>http://localhost:11434</code></td><td>Ollama server address</td></tr>
+    <tr><td><code>OPENAI_API_KEY</code> / <code>OPENAI_BASE_URL</code></td><td>—</td><td>For the <code>openai</code> provider</td></tr>
+  </table>
+
+  <h2>Swapping components</h2>
+  <ul>
+    <li><strong>Embeddings</strong> — implement the <code>Embedder</code> protocol (<code>embed(texts) -&gt; np.ndarray</code>).</li>
+    <li><strong>Vector store</strong> — replace <code>InMemoryVectorStore</code> with Chroma / pgvector / Qdrant behind the same <code>add</code> / <code>search</code> interface.</li>
+    <li><strong>LLM</strong> — implement the <code>LLMClient</code> protocol (<code>generate(system_prompt, user_prompt) -&gt; str</code>).</li>
+    <li><strong>Chunking</strong> — implement the <code>Chunker</code> protocol and pass <code>chunker=...</code> to <code>RAGPipeline</code>.</li>
+  </ul>
+
+  <footer>
+    rag-example · <a href="https://github.com/dilonwork/rag-example">github.com/dilonwork/rag-example</a> · MIT-style example code for learning.
+  </footer>
+
+</div>
+</body>
+</html>

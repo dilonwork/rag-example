@@ -71,7 +71,8 @@ Four runnable scripts under `examples/` (run from the repo root):
 | `04_custom_chunker.py` | Plug in your own chunking strategy via `RAGPipeline(settings, chunker=...)` | No |
 
 A step-by-step Chinese tutorial covering all four examples — what each one implements
-and what output to expect — is in [docs/rag-examples-tutorial.pdf](docs/rag-examples-tutorial.pdf).
+and what output to expect — is in [doc/rag-examples-tutorial.pdf](doc/rag-examples-tutorial.pdf),
+with a landing page at [doc/index.html](doc/index.html).
 
 ## Configuration (environment variables)
 
