@@ -70,6 +70,9 @@ Four runnable scripts under `examples/` (run from the repo root):
 | `03_my_docs.py` | Index your own folder: `RAG_DOCS_DIR=~/my-notes python examples/03_my_docs.py --ask "..."` | No |
 | `04_custom_chunker.py` | Plug in your own chunking strategy via `RAGPipeline(settings, chunker=...)` | No |
 
+A step-by-step Chinese tutorial covering all four examples — what each one implements
+and what output to expect — is in [docs/rag-examples-tutorial.pdf](docs/rag-examples-tutorial.pdf).
+
 ## Configuration (environment variables)
 
 | Variable | Default | Purpose |
